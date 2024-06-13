@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css"; // Include Bootstrap CSS
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons from react-icons
+import "bootstrap/dist/css/bootstrap.min.css";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Register = () => {
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -10,6 +10,8 @@ const Register = () => {
     email: "",
     password: "",
     password2: "",
+    phone_number: "", // New field for phone number
+    address: "", // New field for address
   });
 
   const [showPassword, setShowPassword] = useState({
@@ -26,7 +28,7 @@ const Register = () => {
   };
 
   const getFilteredFormData = (formData) => {
-    const { password2, ...filteredData } = formData; // Destructuring assignment
+    const { password2, ...filteredData } = formData;
     return filteredData;
   };
 
@@ -46,7 +48,7 @@ const Register = () => {
       const filteredData = getFilteredFormData(formData);
 
       const response = await axios.post(
-        `${backendUrl}/api/accounts/register/`,
+        `${backendUrl}/api/customer/`,
         formData,
         {
           headers: {
@@ -109,6 +111,33 @@ const Register = () => {
             required
             className="form-control"
           />
+        </div>
+        <div className="form-group mb-3">
+          <label htmlFor="phone_number" className="form-label">
+            Phone Number:
+          </label>
+          <input
+            type="text"
+            id="phone_number"
+            name="phone_number"
+            value={formData.phone_number}
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
+        </div>
+        <div className="form-group mb-3">
+          <label htmlFor="address" className="form-label">
+            Address:
+          </label>
+          <textarea
+            id="address"
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            required
+            className="form-control"
+          ></textarea>
         </div>
         <div className="form-group mb-3 position-relative">
           <label htmlFor="password" className="form-label">

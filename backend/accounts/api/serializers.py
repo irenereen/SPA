@@ -1,59 +1,39 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate
-from django.contrib.auth.password_validation import validate_password
-from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User
+from django.contrib.auth import get_user_model
+from .models import Customer
 
-class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True, required=True)
+User = get_user_model()
 
+class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = "__all__"
-        extra_kwargs = {
-            'email': {'required': True},
-        }
-
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
-        return attrs
+        model = Customer
+        fields = '__all__'
+        extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        user = User(
+        user = Customer(
             email=validated_data['email'],
-            username=validated_data['username']
+            username=validated_data['email']
         )
-        user.set_password(validated_data['password'])
+        user.set_password(validated_data['password'])  # Hash the password
         user.save()
+        
         return user
 
-class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField(max_length=128, write_only=True)
+    def update(self, instance, validated_data):
+        instance.email = validated_data.get('email', instance.email)
+        instance.username = validated_data.get('username', instance.username)
+        instance.is_customer = True
+        password = validated_data.get('password', None)
+        if password:
+            instance.set_password(password)  # Hash the password
+        instance.save()
+        
+        return instance
 
-    def validate(self, data):
-        email = data.get('email', None)
-        password = data.get('password', None)
-
-        if email is None or password is None:
-            raise serializers.ValidationError('Both email and password are required to login.')
-
-        user = authenticate(email=email, password=password)
-
-        if user is None:
-            raise serializers.ValidationError('Invalid email or password.')
-
-        return {
-            'email': user.email,
-            'username': user.username,
-            'tokens': self._get_tokens_for_user(user)
-        }
-
-    def _get_tokens_for_user(self, user):
-        refresh = RefreshToken.for_user(user)
-        return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Customer
+        extra_kwargs = {'password': {'write_only': True}}
+        fields=['id','username','address','email','first_name','last_name','phone_number','profile_picture']
+    

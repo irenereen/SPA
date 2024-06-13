@@ -1,17 +1,16 @@
 from django.db import models
-from accounts.api.models import User
-
+from accounts.api.models import Customer
 
 class Staff(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
     ROLE_CHOICES = [
         ('therapist', 'Therapist'),
         ('receptionist', 'Receptionist'),
-        ('hairdreser', 'Hairdreser')
+        ('hairdresser', 'Hairdresser')
     ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     shift_start_time = models.TimeField()
     shift_end_time = models.TimeField()
 
     def __str__(self):
-        return f"{self.user.username} - {self.role}"
+        return f"{self.customer.username} - {self.role}"

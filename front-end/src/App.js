@@ -3,9 +3,10 @@ import { StrictMode, useState, useEffect } from "react";
 import Login from "./components/login";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Register from "./components/register";
+import CustomerUpdate from "./components/updateCustomerDetails";
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+ 
   const [accessToken, setAccessToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
 
@@ -16,7 +17,7 @@ const App = () => {
     if (access && refresh) {
       setAccessToken(access);
       setRefreshToken(refresh);
-      setIsLoggedIn(true);
+    
     }
   }, []);
 
@@ -26,6 +27,8 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/CustomerUpdateProfile" element={< CustomerUpdate/>} />
+
         </Routes>
       </BrowserRouter>
     </StrictMode>

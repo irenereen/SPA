@@ -14,13 +14,14 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await axios.post(`${backendUrl}/api/accounts/login/`, {
+      const response = await axios.post(`${backendUrl}/auth/token/`, {
         email,
         password,
       });
-      localStorage.setItem("access_token", response.data.tokens.access);
-      localStorage.setItem("refresh_token", response.data.tokens.refresh);
-      history.push("/dashboard"); // Redirect to a protected route
+      localStorage.setItem("access", response.data.access);
+      localStorage.setItem("refresh", response.data.refresh);
+      localStorage.setItem('userID',response.data.user)
+      // history.push("/dashboard"); // Redirect to a protected route
     } catch (error) {
       setError("Invalid email or password");
     }
